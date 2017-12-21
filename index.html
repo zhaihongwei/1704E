@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<style>
+		ul {
+			list-style: none;
+			font-size: 0px;
+			margin-top: -700px;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		#view {
+			width: 600px;
+			height: 700px;
+			margin: 0 auto;
+			border: 1px solid red;
+			overflow: hidden;
+		}
+		
+		#view>ul>li>img {
+			width: 600px;
+			height: 700px;
+		}
+		
+		.myplan {
+			width: 100px;
+			height: 100px;
+			background: url(images/Hero.png) no-repeat;
+			background-size: 100%;
+			position: absolute;
+			top: 70%;
+			left: 50%;
+			margin-left: -50px;
+			/*border:1px solid red;*/
+			cursor: none;
+		}
+		
+		#start {
+			width: 100px;
+			height: 50px;
+			text-align: center;
+			font-size: 27px;
+			font-weight: 700;
+			border: 1px solid darkgray;
+			border-radius: 10px;
+			line-height: 50px;
+			position: absolute;
+			left: 50%;
+			top: 20%;
+			margin-left: -50px;
+		}
+		
+		span {
+			display: block;
+			position: absolute;
+			width: 119px;
+			height: 80px;
+			background: url(images/xiaohong.png) no-repeat center;
+			top: 0px;
+			z-index: 1000;
+		}
+		
+		.bullet {
+			background: url(images/bullet.png) no-repeat center;
+			width: 9px;
+			height: 21px;
+			position: absolute;
+			/*left:100px;
+			top: 400px;*/
+			z-index: 1000;
+		}
+	</style>
+
+	<body>
+		<div id='view'>
+			<ul id='background_ul'>
+				<li><img src="images/background.png" alt="" /></li>
+				<li><img src="images/background.png" alt="" /></li>
+			</ul>
+		</div>
+		<!--<p class="myplan"></p>-->
+		<p id='start'>start</p>
+
+		<script type="text/javascript">
+		
+		
+		
+			var myPlan;
+			var timer;
+			//背景图移动	
+			function backgroundMove() {
+
+				//得到当前的ul 的  marginTop值
+				//				var mt = background_ul.style.marginTop;
+				//				getComputedStyle(background_ul).marginTop
+				var mt = parseFloat(getComputedStyle(background_ul).marginTop);
+				//改变 ul的marginTop值
+				if(mt == 0) {
+					mt = -700;
+				}
+				background_ul.style.marginTop = ++mt + 'px';
+
+			}
+			//创建敌机  
+
+			function createPlan() {
+				//创建元素 p
+				var plan = document.createElement('span');
+				//随机位置  随机 left
+				plan.style.marginLeft =
+					Math.floor(Math.random() * (600 - 100)) + 'px'
+				view.appendChild(plan);
+			}
+
+			//敌机 下落
+			function movePlan() {
+				//找到所有的 敌机 元素
+				var spanArr = document.querySelectorAll('span');
+				//获得每个敌机元素的 当前top值  并 减少这个top的值
+				for(var i = 0; i < spanArr.length; i++) {
+					var t = parseFloat(getComputedStyle(spanArr[i]).top);
+					if(t >= 700 - 100) {
+						view.removeChild(spanArr[i]);
+					}
+					spanArr[i].style.top = ++t + 'px';
+					if(boom(spanArr[i],myPlan)){
+						view.removeChild(myPlan);
+						clearInterval(timer);
+					}
+				}
+				//判断 如果 飞出画面 就删掉这个 飞机
+			}
+			// 创建子弹  
+			function createBullet() {
+				var bullet = document.createElement('p');
+				var myplan = document.querySelector('.myplan');
+				bullet.className = 'bullet';
+				var l = myplan.offsetLeft;
+				var t = myplan.offsetTop;
+				console.log(l, t);
+				bullet.style.left = l + 'px';
+				bullet.style.top = t + 'px';
+				view.appendChild(bullet);
+			}
+
+			// 子弹移动   双排的子弹  散弹  
+			function moveBullet() {
+
+				//找到所有的子弹
+				var bArr = document.querySelectorAll('.bullet');
+				for(var i = 0; i < bArr.length; i++) {
+					//获得每个子弹的当前 top值
+					var t = parseFloat(getComputedStyle(bArr[i]).top);
+					if(t <= -21) {
+						view.removeChild(bArr[i]);
+					}
+					bArr[i].style.top = --t + 'px';
+				}
+
+			}
+
+			// 碰撞检测   爆炸效果
+
+			function checkboom() {
+				//找到所有的飞机 和子弹
+				//找到所有的敌机
+				var bArr = document.querySelectorAll('.bullet');
+				for(var j = 0; j < bArr.length; j++) {
+					if(document.querySelectorAll('span')) {
+						var spanArr = document.querySelectorAll('span');
+						for(var i = 0; i < spanArr.length; i++) {
+							var bool = boom(bArr[j], spanArr[i]);
+							if(bool){
+								view.removeChild(bArr[j]);
+								view.removeChild(spanArr[i]);
+							}
+						}
+					}
+				}
+				
+				
+				
+			}
+			
+			function boom(b2, b1) {
+				if(b2.offsetLeft + b2.offsetWidth >= b1.offsetLeft &&
+					b2.offsetTop + b2.offsetHeight >= b1.offsetTop &&
+					b2.offsetLeft <= b1.offsetLeft + b1.offsetWidth &&
+					b2.offsetTop <= b1.offsetTop + b1.offsetHeight
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			//创建 英雄机	
+			//1创建元素 添加  class（预先定义好的飞机样式，包括宽高，背景图片）  
+			//2 添加事件 （跟随鼠标移动）
+			var n = 0;
+			start.onclick = function() {
+				//总定时器
+
+				 timer = setInterval(function() {
+					n++;
+					//背景图移动
+					if(n % 2 == 0) {
+						backgroundMove();
+					}
+
+					//创建飞机
+					if(n % 500 == 0) { //减缓调用频率
+						createPlan();
+					}
+
+					movePlan();
+					if(n % 50 == 0) {
+						createBullet();
+					}
+
+					moveBullet();
+					checkboom();
+				}, 10)
+
+				//隐藏按钮
+				start.style.display = 'none';
+				//创建飞机
+				myPlan = document.createElement('p');
+				myPlan.className = 'myplan';
+				view.appendChild(myPlan);
+				// 添加鼠标移动事件  让飞机跟随
+				// 使用键盘事件 控制飞机
+				view.onmousemove = function(e) {
+					//获得事件对象
+					var event = window.event || e;
+					var x = event.clientX;
+					var y = event.clientY;
+					myPlan.style.left = x + 'px';
+					myPlan.style.top = y - 50 + 'px';
+				}
+			}
+
+			function boom(b2, b1) {
+				if(b2.offsetLeft + b2.offsetWidth >= b1.offsetLeft &&
+					b2.offsetTop + b2.offsetHeight >= b1.offsetTop &&
+					b2.offsetLeft <= b1.offsetLeft + b1.offsetWidth &&
+					b2.offsetTop <= b1.offsetTop + b1.offsetHeight
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	
+	<style>
+		div{
+			width: 200px;
+			height: 200px;
+			border: 1px solid red;
+			margin: 400px;
+			float: left;
+		}
+		#b2{
+			position: absolute;
+		}
+	</style>
+	<body>
+		
+		<div id='b1'> b1</div>
+		
+		<div id='b2'> b2</div>
+		
+		<script type="text/javascript">
+			document.onmousemove=function(e){
+				var e = window.event||e;
+				b2.style.marginLeft=e.clientX-100/2+'px';
+				b2.style.marginTop=e.clientY-100/2+'px';
+				if(boom(b2,b1)){
+					alert('zhuang')
+				}else{
+					console.log('ok')
+				}
+				
+				
+			}
+			
+			function boom(b2,b1){
+				if(b2.offsetLeft+b2.offsetWidth>=b1.offsetLeft 
+					&& b2.offsetTop+b2.offsetHeight>=b1.offsetTop
+					&& b2.offsetLeft<=b1.offsetLeft+b1.offsetWidth
+					&& b2.offsetTop<=b1.offsetTop+b1.offsetHeight
+				){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		</script>
+	</body>
+</html>
