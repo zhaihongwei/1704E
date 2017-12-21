@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style>
+		ul {
+			list-style: none;
+			font-size: 0px;
+			margin-top: -700px;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		#view {
+			width: 600px;
+			height: 700px;
+			margin: 0 auto;
+			border: 1px solid red;
+			overflow: hidden;
+			position: relative;
+		}
+		
+		#view>ul>li>img {
+			width: 600px;
+			height: 700px;
+		}
+		
+		.myplan {
+			width: 100px;
+			height: 100px;
+			background: url(images/Hero.png) no-repeat;
+			background-size: 100%;
+			position: absolute;
+			top: 70%;
+			left: 50%;
+			margin-left: -50px;
+			/*border:1px solid red;*/
+			cursor: none;
+		}
+		
+		#start {
+			width: 100px;
+			height: 50px;
+			text-align: center;
+			font-size: 27px;
+			font-weight: 700;
+			border: 1px solid darkgray;
+			border-radius: 10px;
+			line-height: 50px;
+			position: absolute;
+			left: 50%;
+			top: 20%;
+			margin-left: -50px;
+		}
+		
+		.xiaohong {
+			display: block;
+			position: absolute;
+			width: 80px;
+			height: 70px;
+			background: url(images/xiaohong.png) no-repeat center;
+			background-size: 100%;
+			z-index: 1000;
+			top:-100px;
+		}
+		
+		.bullet {
+			background: url(images/bullet.png) no-repeat center;
+			width: 9px;
+			height: 21px;
+			position: absolute;
+			/*left:100px;
+			top: 400px;*/
+			z-index: 1000;
+		}
+	</style>
+	<body>
+		<div id='view'>
+			<ul id='background_ul'>
+				<li><img src="images/background.png" alt="" /></li>
+				<li><img src="images/background.png" alt="" /></li>
+			</ul>
+		</div>
+		<!--<p class="myplan"></p>-->
+		<!--<p id='start'>start</p>-->
+	</body>
+	<script type="text/javascript">
+		var game = {
+			status:false,
+			fenshu:0,
+			start:function(){
+				var _this = this;
+				var n = 0;
+				setInterval(function(){
+					n++;
+					if(n%200==0){
+						_this.createPlan();
+						_this.createBullte();
+					}
+					_this.planMove();
+					_this.bullteMove()
+					
+				},10)
+				this.createMyPlan()
+			},
+			createPlan:function(){
+				var p = document.createElement('p');
+				p.className='xiaohong';
+				p.style.left=Math.random() * (600 - 100)+'px';
+				view.appendChild(p);
+				
+			},
+			planMove:function(){
+				var arr = document.getElementsByClassName('xiaohong');
+				console.log(arr)
+				for(var i=0;i<arr.length;i++){
+					console.log(arr[i].style.top)
+					if(arr[i].offsetTop>(innerHeight-100)){
+						view.removeChild(arr[i]);
+					}
+					arr[i].style.top=arr[i].offsetTop+5+'px';
+				}
+			},
+			createMyPlan:function(){
+				var p = document.createElement('p');
+				p.className='myplan';
+//				p.style.left=Math.random() * (600 - 100)+'px';
+				document.onmousemove=function(e){
+					p.style.left=e.clientX-view.offsetLeft+'px';
+					p.style.top = e.clientY+'px'
+				}
+				view.appendChild(p);
+			},
+			createBullte:function(){
+				var p = document.createElement('p');
+				var myplan = document.getElementsByClassName('myplan')[0];
+				p.className='bullet';
+				p.style.left=myplan.style.left;
+				p.style.top=myplan.style.top;
+				view.appendChild(p);
+			},
+			bullteMove:function(){
+				var bullteArr = document.getElementsByClassName('bullet');
+				console.log(bullteArr)
+				for(var i=0;i<bullteArr.length;i++){
+					bullteArr[i].style.top=bullteArr[i].offsetTop-5+'px';
+				}
+			}
+		}
+		game.start();
+		
+	</script>
+</html>
